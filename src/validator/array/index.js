@@ -1,5 +1,6 @@
 const ValidatorError =  require('../../error');
 const Type = require('../../module/type');
+let Validator = null;
 // const hash = require('json-hash');
 
 module.exports = (schema, value, path, globalErrorTipConfig, errorCollection) => {
@@ -83,7 +84,8 @@ module.exports = (schema, value, path, globalErrorTipConfig, errorCollection) =>
 
     if (schema.items !== undefined) {
         value.every((item, index) => {
-            return require('../')(schema.items, item, `${path}[${index}]`, globalErrorTipConfig, errorCollection);
+            if (Validator === null) Validator = require('../');
+            return Validator(schema.items, item, `${path}[${index}]`, globalErrorTipConfig, errorCollection);
         }) || (hasError = true);
     }
     return !hasError;

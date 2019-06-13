@@ -1,6 +1,7 @@
 const ValidatorError =  require('../../error');
 const Type = require('../../module/type');
 // const hash = require('json-hash');
+let Validator = null;
 
 module.exports = (schema, value, path, globalErrorTipConfig, errorCollection) => {
     schema.errorTip = schema.errorTip || {};
@@ -213,7 +214,8 @@ function ObjectValidator(schema, value, path, errorTips, errorCollection, global
         else {
             return Object.keys(value).filter(key => {
                 if (new RegExp(patternKey).test(key)) {
-                    return !require('../')(patternSchema, value[key], path === '.' ? `${path}${key}` : `${path}.${key}`, globalErrorTipConfig, errorCollection);
+                    if (Validator === null) Validator = require('../');
+                    return !Validator(patternSchema, value[key], path === '.' ? `${path}${key}` : `${path}.${key}`, globalErrorTipConfig, errorCollection);
                 }
                 else {
                     if (schema.additionalProperties === false) {
@@ -255,7 +257,8 @@ function ObjectValidator(schema, value, path, errorTips, errorCollection, global
                 }
             }
             let propertySchema = schema.properties[key];
-            return !require('../')(propertySchema, value[key], path === '.' ? `${path}${key}` : `${path}.${key}`, globalErrorTipConfig, errorCollection);
+            if (Validator === null) Validator = require('../');
+            return !Validator(propertySchema, value[key], path === '.' ? `${path}${key}` : `${path}.${key}`, globalErrorTipConfig, errorCollection);
         });
         //从schema角度过滤出不符合的key
         let instanceKey = Object.keys(value);

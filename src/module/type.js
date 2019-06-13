@@ -1,11 +1,28 @@
 module.exports = {
     get: (value) => {
-        let type = typeof value;
-        if(require('isobject')(value) && !(value instanceof RegExp)) type = "object";
-        if (Array.isArray(value)) type = "array";
-        if (value === null) type = "null";
-        if (value instanceof RegExp) type = "regexp";
-        if (typeof value == "number" && Number.isInteger(value)) type = "integer";
-        return type;
+        if (value === null) {
+            return "null";
+        }
+        else if (value === undefined) {
+            return "undefined";
+        }
+        else if (value.__proto__ === Number.prototype) {
+            return Number.isInteger(value) ? "integer" : "number";
+        }
+        else if (value.__proto__ === Boolean.prototype) {
+            return "boolean";
+        }
+        else if (value.__proto__ === String.prototype) {
+            return "string";
+        }
+        else if (Array.isArray(value)) {
+            return "array";
+        }
+        else if (value instanceof RegExp) {
+            return "regexp";
+        }
+        else {
+            return "object";
+        }
     }
 };

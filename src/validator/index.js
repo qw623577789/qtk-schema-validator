@@ -1,24 +1,15 @@
 const ValidatorError =  require('../error');
+const BooleanValidator = require('./boolean');
+const NumberValidator = require('./number');
+const IntegerValidator = require('./integer');
+const StringValidator = require('./string');
+const NullValidator = require('./null');
+const ObjectValidator = require('./object');
+const ArrayValidator = require('./array');
+const OneOfValidator = require('./one_of');
 
 module.exports = (schema, instance, path, globalErrorTipConfig, errorCollection) => {
-    const BooleanValidator = require('./boolean');
-    const NumberValidator = require('./number');
-    const IntegerValidator = require('./integer');
-    const StringValidator = require('./string');
-    const NullValidator = require('./null');
-    const ObjectValidator = require('./object');
-    const ArrayValidator = require('./array');
-    const OneOfValidator = require('./one_of');
-
-    let type = undefined;
-    if (typeof schema === "boolean") {
-        type = schema;
-    }
-    else {
-        type = schema.type || 'oneOf';
-    }
-
-    switch(type) {
+    switch(schema.__proto__ === Boolean.prototype ? schema : (schema.type || 'oneOf')) { //速度优化，放弃typeof
         case 'boolean':
             return BooleanValidator(schema, instance, path, globalErrorTipConfig, errorCollection);
         case 'integer':
@@ -36,16 +27,16 @@ module.exports = (schema, instance, path, globalErrorTipConfig, errorCollection)
         case 'oneOf':
             return OneOfValidator(schema, instance, path, globalErrorTipConfig, errorCollection);
         case true:
-            break;
+            return true;
         case false:
             errorCollection.push(new ValidatorError({
                 errorOrText: globalErrorTipConfig.schema, 
                 path, 
                 desc: '实际值不符合预期的情况'
             }));
-            break;
+            return false;
         default:
-            throw new Error(`no support schema type: ${type}`)
+            throw new Error(`no support schema type: ${schema.type}`)
             break;
     }
 }

@@ -1,20 +1,26 @@
 {
   "name": "@qtk/schema-validator",
   "version": "0.0.1",
-  "description": "",
+  "description": "a humanization json schema validator",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha"
   },
   "author": "skip",
   "license": "MIT",
   "dependencies": {
     "@qtk/schema": "0.0.5",
-    "isobject": "^4.0.0",
-    "json-hash": "^1.2.0",
     "power-assert": "^1.6.1"
   },
   "devDependencies": {
     "mocha": "^6.1.4"
-  }
+  },
+  "keywords": [
+    "json schema",
+    "validator",
+    "humanization",
+    "custom error tip",
+    "json",
+    "qtk"
+  ]
 }

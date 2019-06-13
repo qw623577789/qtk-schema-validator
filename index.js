@@ -1,5 +1,5 @@
 const {sugar} = require("@qtk/schema");
-
+const Validator = require('./src/validator');
 const globalErrorTipConfig = {
     schema: "路径:{PATH} , schema有误, {DESC}",
     boolean: {
@@ -42,7 +42,7 @@ const globalErrorTipConfig = {
     }
 }
 
-module.exports = class Validator {
+module.exports = class {
     constructor(schema, globalErrorTip = {}) {
         this._schema = sugar.resolve(schema).normalize().normalize();
         this._globalErrorTipConfig = Object.assign({}, globalErrorTipConfig);
@@ -57,18 +57,16 @@ module.exports = class Validator {
                 }
             });
         this._errors = [];
-        this._instance = undefined;
+        this._validator = Validator;
     }
 
     static from(schema, globalErrorTip = {}) {
-        return new Validator(schema, globalErrorTip);
+        return new this(schema, globalErrorTip);
     }
 
     validate(instance) {
-        this._errors.length = 0;
-        this._instance = instance;
-        require('./src/validator')(this._schema, instance, ".", this._globalErrorTipConfig, this._errors);
-        return this._errors.length === 0;
+        if (this._errors.length !== 0) this._errors = [];
+        return this._validator(this._schema, instance, ".", this._globalErrorTipConfig, this._errors);
     }
 
     get errors() {
@@ -99,8 +97,6 @@ module.exports = class Validator {
             }
 
             let tip = error.info.tipTemplate
-                .replace(/\{SCHEMA\}/g, JSON.stringify(this._schema))
-                .replace(/\{INSTANCE\}/g, JSON.stringify(this._instance))
                 .replace(/\{PATH\}/g, error.info.path)
                 .replace(/\{VALUE\}/g, value)
                 .replace(/\{ACTUAL\}/g, error.info.actual)

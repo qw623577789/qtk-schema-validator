@@ -1,4 +1,5 @@
 const ValidatorError =  require('../../error');
+let Validator = null;
 
 module.exports = (schema, value, path, globalErrorTipConfig, errorCollection) => {
     schema.errorTip = schema.errorTip || {};
@@ -9,7 +10,8 @@ module.exports = (schema, value, path, globalErrorTipConfig, errorCollection) =>
     let matchErrors = [];
     let matchBranches = schema.oneOf.filter((item, index) => {
         let errors = [];
-        require('../')(item, value, path, globalErrorTipConfig, errors);
+        if (Validator === null) Validator = require('../');
+        Validator(item, value, path, globalErrorTipConfig, errors);
         if (errors.length !== 0) matchErrors.push(errors);
         return errors.length === 0;
     });
