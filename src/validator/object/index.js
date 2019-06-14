@@ -238,9 +238,10 @@ function ObjectValidator(schema, value, path, errorTips, errorCollection, global
 
     }
     else {
+        let properties = schema.properties || {};
         //从值角度过滤出不符合的key
         let notMatchPropertiesKeys = Object.keys(value).filter(key => {
-            if (schema.properties[key] === undefined) {
+            if (properties[key] === undefined) {
                 if (schema.additionalProperties === false) {
                     errorCollection.push(new ValidatorError({
                         errorOrText: errorTips.unexpectedKey, 
@@ -256,13 +257,13 @@ function ObjectValidator(schema, value, path, errorTips, errorCollection, global
                     return false;
                 }
             }
-            let propertySchema = schema.properties[key];
+            let propertySchema = properties[key];
             if (Validator === null) Validator = require('../');
             return !Validator(propertySchema, value[key], path === '.' ? `${path}${key}` : `${path}.${key}`, globalErrorTipConfig, errorCollection);
         });
         //从schema角度过滤出不符合的key
         let instanceKey = Object.keys(value);
-        Object.keys(schema.properties)
+        Object.keys(properties)
             .filter(_ => !instanceKey.includes(_))
             .filter(propertiesKey => {
                 if (value[propertiesKey] === undefined && (schema.required || []).includes(propertiesKey)) {
