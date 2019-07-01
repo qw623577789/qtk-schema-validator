@@ -9,7 +9,7 @@
   "author": "skip",
   "license": "MIT",
   "dependencies": {
-    "@qtk/schema": "0.0.5",
+    "@qtk/schema": "0.0.6",
     "power-assert": "^1.6.1"
   },
   "devDependencies": {
