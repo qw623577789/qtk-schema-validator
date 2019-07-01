@@ -66,7 +66,7 @@ function _listIfObjectSchema(schema, collection = []) {
     );
 
     //处理else
-    if (schema.else === false) { //endif情况
+    if (schema.else === false || schema.else === undefined) { //endif情况
         return collection;
     }
     else if (schema.else.if !== undefined) { //elseif情况
@@ -96,7 +96,7 @@ function _listIfObjectSchema(schema, collection = []) {
 
 function _getIfObjectBranch(schemas, value, path, errorTips, errorCollection, globalErrorTipConfig) {
     let matchErrors = [];
-    let matchBranches = schemas.filter(schema => {
+    let matchBranch = schemas.find(schema => {
         let errors = [];
         let ifObjectSchema = {
             type: "object",
@@ -108,7 +108,7 @@ function _getIfObjectBranch(schemas, value, path, errorTips, errorCollection, gl
         if (errors.length !== 0) matchErrors.push(errors);
         return errors.length === 0;
     });
-    if (matchBranches.length === 0) {
+    if (matchBranch === undefined) {
         errorCollection.push(
             new ValidatorError({
                 errorOrText: errorTips.branchMatch, 
@@ -122,21 +122,21 @@ function _getIfObjectBranch(schemas, value, path, errorTips, errorCollection, gl
         )
         return false;
     }
-    else if (matchBranches.length > 1) {
-        errorCollection.push(
-            new ValidatorError({
-                errorOrText: errorTips.branchMatch, 
-                path, 
-                desc: '实际值不能同时符合多个if条件',
-                keyword: 'branchMatch',
-                matchDetail: {
-                    match: matchBranches.map(_ => _._if)
-                }
-            })
-        )
-        return false;
-    }
-    return matchBranches[0];
+    // else if (matchBranches.length > 1) {
+    //     errorCollection.push(
+    //         new ValidatorError({
+    //             errorOrText: errorTips.branchMatch, 
+    //             path, 
+    //             desc: '实际值不能同时符合多个if条件',
+    //             keyword: 'branchMatch',
+    //             matchDetail: {
+    //                 match: matchBranches.map(_ => _._if)
+    //             }
+    //         })
+    //     )
+    //     return false;
+    // }
+    return matchBranch;
 }
 
 function ObjectValidator(schema, value, path, errorTips, errorCollection, globalErrorTipConfig) {

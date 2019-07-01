@@ -138,56 +138,6 @@ describe('object', function() {
             );
         });
 
-        it('.if.properties().then.require()匹配多个if条件', function() {
-            let schema = object().properties({
-                type: string().enum('student', 'staff'),
-                grade: integer(),
-                salary: integer(),
-            })
-                .if.properties({type: 'student'})
-                .then.require('type', 'grade')
-                .elseIf.properties({type: 'student', 'salary': [111, 222]})
-                .then.require('type', 'salary')
-                .else.invalid()
-                .endIf
-                .errorTip({
-                    branchMatch: "自定义:路径:{PATH} , {DESC}, 匹配详情：\n{MATCH_DETAIL}",
-                });
-            let validator = Validator.from(schema, globalConfig);
-            validator.validate({type: 'student', 'salary': 111});
-            assert.equal(
-                `自定义:路径:. , 实际值不能同时符合多个if条件, 匹配详情：
-                [
-                    {
-                        "type": {
-                            "type": "string",
-                            "enum": [
-                                "student"
-                            ],
-                            "errorTip": {}
-                        }
-                    },
-                    {
-                        "type": {
-                            "type": "string",
-                            "enum": [
-                                "student"
-                            ],
-                            "errorTip": {}
-                        },
-                        "salary": {
-                            "type": "integer",
-                            "enum": [
-                                111,
-                                222
-                            ],
-                            "errorTip": {}
-                        }
-                    }
-                ]`.replace(/\s/g, "")              
-                ,validator.errorsText.replace(/\s/g, ""), "branchMatchError错误提示有误");
-
-        });
     });
     
 });
