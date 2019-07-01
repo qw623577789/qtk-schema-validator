@@ -1,6 +1,6 @@
 {
   "name": "@qtk/schema-validator",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "a humanization json schema validator",
   "main": "index.js",
   "scripts": {
