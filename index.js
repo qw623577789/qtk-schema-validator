@@ -43,8 +43,8 @@ const globalErrorTipConfig = {
 }
 
 module.exports = class {
-    constructor(schema, globalErrorTip = {}) {
-        this._schema = sugar.resolve(schema).normalize().normalize();
+    constructor(schema, globalErrorTip = {}, isJSONSchema = false) {
+        this._schema = isJSONSchema === true ? schema : sugar.resolve(schema).normalize().normalize();
         this._globalErrorTipConfig = Object.assign({}, globalErrorTipConfig);
         
         Object.keys(globalErrorTip)
@@ -62,6 +62,10 @@ module.exports = class {
 
     static from(schema, globalErrorTip = {}) {
         return new this(schema, globalErrorTip);
+    }
+
+    static fromJSONSchema(schema, globalErrorTip = {}) {
+        return new this(schema, globalErrorTip, true);
     }
 
     validate(instance) {

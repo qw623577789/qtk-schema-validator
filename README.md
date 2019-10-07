@@ -70,6 +70,10 @@ oneOf|其无关键字
 
 ## 数据校验器
 数据校验功能主要根据事先定义好的schema，对数据进行校验，返回一个布尔值表明是否通过校验。
+目前有三种校验器初始化方式,支持**原生json schema语法**及**qtk schema语法**:
+- **qtk schema/json schema:** new Validator(schema, globalErrorTip = {}, isJSONSchema = false)
+- **qtk schema:** Validator.from(schema, globalErrorTip = {})
+- **json schema:** Validator.fromJSONSchema(schema, globalErrorTip = {})
 
 ### Boolean
 ```js
