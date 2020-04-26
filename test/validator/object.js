@@ -102,7 +102,7 @@ describe('object', function() {
             assert(validator.validate({type: 'student', grade: 12, major: 'cs'}) === true);
             assert(validator.validate({type: 'housewife', salary: 12000})        === false);
         });
-    
+
         it('.if.properties().then.require()', function() {
             let schema = object().properties({
                 type: string().enum('student', 'staff'),
@@ -116,6 +116,26 @@ describe('object', function() {
             assert(validator.validate({type: 'staff', salary: '12000'})          === false);
             assert(validator.validate({type: 'student', grade: 12, major: 'cs'}) === true);
             assert(validator.validate({type: 'housewife', salary: 12000})        === false);
+        });
+
+        it('.if.properties().then.require().additionalProperties(false)', function() {
+            let schema = object().properties({
+                type: string().enum('student', 'staff'),
+                grade: integer(),
+                salary: integer(),
+            })
+                .if.properties({type: 'student'})
+                .then.require('type', 'grade').additionalProperties(false)
+                .elseIf.properties({type: 'staff'})
+                .then.require('type', 'salary').additionalProperties(false)
+                .else.invalid()
+                .endIf;
+            let validator = Validator.from(schema);
+
+            assert(validator.validate({type: 'student', grade: 12, salary: 12000}) === true);
+            assert(validator.validate({type: 'staff', salary: 12000, grade: 12}) === true);
+            assert(validator.validate({type: 'student', grade: 12, major: 'cs'}) === false);
+            assert(validator.validate({type: 'housewife', salary: 12000, major: 'cs'}) === false);
         });
     });
     

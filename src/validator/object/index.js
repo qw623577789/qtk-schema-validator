@@ -30,13 +30,10 @@ function _listIfObjectSchema(schema, collection = []) {
         ifObject.properties = Object.assign(schema.then.properties, schema.if.properties);
     }
     else if (schema.properties !== undefined) {
-        ifObject.properties = Object.assign(
-            ifObject.required.reduce((prev, curr) => {
-                prev[curr] = schema.properties[curr];
-                return prev;
-            },{}),
-            schema.if.properties
-        );
+        ifObject.properties = {
+            ...schema.properties,
+            ...schema.if.properties
+        };
     }
     else {
         ifObject.properties = undefined;
@@ -47,13 +44,10 @@ function _listIfObjectSchema(schema, collection = []) {
         ifObject.patternProperties = Object.assign(schema.then.patternProperties, schema.if.patternProperties);
     }
     else if (schema.patternProperties !== undefined) {
-        ifObject.patternProperties = Object.assign(
-            ifObject.required.reduce((prev, curr) => {
-                prev[curr] = schema.patternProperties[curr];
-                return prev;
-            },{}),
-            schema.if.patternProperties
-        );
+        ifObject.patternProperties = {
+            ...schema.patternProperties[curr],
+            ...schema.if.patternProperties
+        };
     }
     else {
         ifObject.patternProperties = undefined;
@@ -265,7 +259,7 @@ function ObjectValidator(schema, value, path, errorTips, errorCollection, global
         let instanceKey = Object.keys(value);
         Object.keys(properties)
             .filter(_ => !instanceKey.includes(_))
-            .filter(propertiesKey => {
+            .forEach(propertiesKey => {
                 if (value[propertiesKey] === undefined && (schema.required || []).includes(propertiesKey)) {
                     errorCollection.push(new ValidatorError({
                         errorOrText: errorTips.required, 
@@ -275,11 +269,9 @@ function ObjectValidator(schema, value, path, errorTips, errorCollection, global
                         expected: propertiesKey, 
                         keyword: 'required'
                     }));
-                    return true;
+                    notMatchPropertiesKeys.push(propertiesKey);
                 }
-                return false;
-            })
-            .forEach(_ => notMatchPropertiesKeys.push(_));
+            });
 
         return notMatchPropertiesKeys.length === 0;
     }
